@@ -1,0 +1,312 @@
+#VRML V2.0 utf8 
+# Copyright by Liu Qi and Alexei Sourin
+EXTERNPROTO FGeometry [
+exposedField SFString definition
+exposedField MFFloat parameters
+exposedField MFInt32 resolution
+	exposedField SFVec3f bboxCenter
+	exposedField SFVec3f bboxSize
+	exposedField SFString type
+	exposedField MFNode	parents
+	exposedField SFVec2f timeSpan 
+] "http://www3.ntu.edu.sg/home/assourin/FVRML/FVRML.wrl#FGeometry"
+EXTERNPROTO FMaterial [
+	exposedField SFString diffuseColor
+	exposedField SFString type
+	exposedField MFColor patternColor
+	exposedField MFFloat patternKey
+	exposedField SFString ambientIntensity
+	exposedField SFString emissiveColor
+	exposedField SFString shininess
+	exposedField SFString specularColor
+	exposedField SFString transparency
+	exposedField MFFloat parameters
+	exposedField MFNode	parents
+	exposedField SFVec2f timeSpan
+] "http://www3.ntu.edu.sg/home/assourin/FVRML/FVRML.wrl#FMaterial"
+EXTERNPROTO FTexture3D [
+	exposedField SFString definition
+	exposedField SFString type
+	exposedField MFFloat parameters
+	exposedField MFNode	parents
+	exposedField SFVec2f timeSpan
+] "http://www3.ntu.edu.sg/home/assourin/FVRML/FVRML.wrl#FTexture3D"
+EXTERNPROTO FAppearance [
+	exposedField SFNode	material
+	exposedField SFNode	texture
+	exposedField SFNode	textureTransform
+	exposedField SFNode	texture3D
+	exposedField MFNode	parents
+	eventIn	SFBool refresh
+] "http://www3.ntu.edu.sg/home/assourin/FVRML/FVRML.wrl#FAppearance"
+EXTERNPROTO FShape [
+	exposedField SFNode	geometry
+	exposedField SFNode	appearance
+	exposedField SFString polygonizer
+	exposedField MFNode	parents
+	exposedField SFTime	startTime
+	exposedField SFTime stopTime
+    exposedField SFTime cycleInterval
+    exposedField SFBool	loop
+	exposedField SFBool	enabled
+	eventOut SFTime	cycleTime
+	eventIn SFFloat set_fraction
+	field SFInt32 frames
+] "http://www3.ntu.edu.sg/home/assourin/FVRML/FVRML.wrl#FShape"
+EXTERNPROTO FTransform [
+	exposedField SFString operation
+	exposedField SFString type
+	exposedField SFString polygonizer
+	exposedField MFFloat parameters
+	exposedField SFString center
+	exposedField SFString rotation
+	exposedField SFString scale
+	exposedField SFString scaleOrientation
+	exposedField SFString translation
+	exposedField MFNode children
+	exposedField MFNode	parents
+	eventIn	SFBool refresh
+    exposedField SFVec2f timeSpan
+	exposedField SFTime	startTime
+	exposedField SFTime stopTime
+    exposedField SFTime cycleInterval
+    exposedField SFBool	loop
+	exposedField SFBool	enabled
+	eventOut SFTime	cycleTime
+	eventIn SFFloat set_fraction
+	field SFInt32 frames
+] "http://www3.ntu.edu.sg/home/assourin/FVRML/FVRML.wrl#FTransform"
+
+Background {skyColor 1 1 1}
+
+Transform {
+	translation -1.4 0 0
+	
+	children[
+		FShape {
+			appearance FAppearance {
+				material FMaterial {
+					diffuseColor "r=(u+1.25)/5;g=(v+2.5)/5;b=(w+2.5)/5;"
+				}	
+			}
+			
+			geometry FGeometry {
+				definition "function frep(x, y, z, t) {		
+					z1 = 0.08;
+					
+					edgeSurface = min(min(min(x+0.25, 0.25-x), y), 0.65-y);
+					edgeEllipsoid = 0.2^2 - (x+0.06)^2 - (y-0.46)^2 - z^2;
+					edge1 = min(edgeSurface, edgeEllipsoid);
+					
+					edgeSurface = min(min(min(x+0.25, 0.25-x), y+0.7), -y);
+					edgeEllipsoid = 0.2^2 - (x+0.06)^2 - (y+0.51)^2 - z^2;
+					edge2 = min(edgeSurface, edgeEllipsoid);
+					
+					indentSurface = min(min(min(min(min(x+0.25, 0.25-x), y), 0.52-y), z-0.02), (z1 + 0.1)-z);
+					indentCylinder = 0.1^2 - (x)^2 - (y-0.32)^2;
+					indent = min(indentSurface, indentCylinder);
+					
+					surface = min(min(min(min(min(x+0.25, 0.25-x), y+0.7), 0.65-y), z+z1), z1-z);
+					surface1 = min(min(min(min(min(x+0.05, 0.25-x), y+0.7), 0.65-y), z+z1), z1-z);
+					surface2 = min(min(min(min(min(x+0.25, 0.25-x), y+0.5), 0.45-y), z+z1), z1-z);
+					mainSurface1 = max(max(max(surface1, surface2), min(surface, edge1)), min(surface, edge2));
+					mainSurface = min(mainSurface1, -indent);
+					
+					circlePadCone = min(min((((z)/1)^2-((x)/0.5)^2-((y - 0.32)/0.5)^2),0.12-z),z);
+					circlePadSurface = min(min(min(min(min(min(x+0.25, 0.25-x), y), 0.53-y), z-0.12), (z1 + 0.08)-z), 0.12^2 - (x)^2 - (y-0.32)^2 - (z-0.13)^2);
+					circlePad = max(circlePadCone, circlePadSurface);
+					
+					dPadSurface = min(min(min(min(min(x+0.15, 0.15-x), y+0.1), 0.2-y), z), (z1 + 0.03)-z);
+					dPadCylinder = 0.06^2 - (x)^2 - (y-0.05)^2;
+					dPadUp = min(dPadSurface, dPadCylinder);
+					
+					dPadSurface = min(min(min(min(min(x+0.25, 0.05-x), y+0.21), 0.09-y), z), (z1 + 0.03)-z);
+					dPadCylinder = 0.06^2 - (x+0.11)^2 - (y+0.06)^2;
+					dPadLeft = min(dPadSurface, dPadCylinder);
+					
+					dPadSurface = min(min(min(min(min(x+0.05, 0.25-x), y+0.21), 0.09-y), z), (z1 + 0.03)-z);
+					dPadCylinder = 0.06^2 - (x-0.11)^2 - (y+0.06)^2;
+					dPadRight = min(dPadSurface, dPadCylinder);
+					
+					dPadSurface = min(min(min(min(min(x+0.15, 0.15-x), y+0.32), -0.02-y), z), (z1 + 0.03)-z);
+					dPadCylinder = 0.06^2 - (x)^2 - (y+0.17)^2;
+					dPadDown = min(dPadSurface, dPadCylinder);
+					
+					circleButton = min(min(min(min(min(x-0.02, 0.12-x), y+0.4), -0.3-y), z), (z1+0.025)-z);
+					minusButton = min(min(min(min(min(x-0.11, 0.19-x), y-0.52), 0.54-y), z), (z1+0.025)-z);
+					
+					backSurface = min(min(min(min(min(x+0.25, 0.25-x), y), 0.62-y), z+(z1*4)), (z1/2)-z);
+					backEllipsoid = 0.2^2 - (x-0.05)^2 - (y-0.62)^2 - z^2;
+					backButton = min(backSurface, backEllipsoid);
+					
+					topSurface = min(min(min(min(min(x+0.2, 0.2-x), y), 0.67-y), z+(z1/2)), (z1/2)-z);
+					topEllipsoid = 0.25^2 - (x-0.05)^2 - (y-0.47)^2 - z^2;
+					topButton = min(topSurface, topEllipsoid);
+					
+					buttonSurface = min(min(min(min(min(x-0.01, 0.29-x), y-0.24), 0.52-y), z+(z1+0.025)), -z);
+					buttonCylinder = 0.04^2 - (x-0.16)^2 - (y-0.38)^2;
+					unlockButton = min(buttonSurface, buttonCylinder);
+					
+					controller = max(max(max(max(max(max(max(max(max(max(mainSurface, circlePad), dPadUp), dPadLeft), dPadRight), dPadDown), circleButton), minusButton), backButton), topButton), unlockButton);
+					return controller;
+				}"
+				
+				
+				bboxSize 0.6 1.45 0.6
+				bboxCenter 0 0 0
+				resolution [100, 100, 100]
+			}
+		}
+	]
+}
+
+Transform {
+	translation 1.4 0 0
+	
+	children[
+		FShape {
+			appearance FAppearance {
+				material FMaterial {
+					diffuseColor "r=(u+4)/5;g=(v+2)/5;b=(w+2)/5;"
+				}	
+			}
+			
+			geometry FGeometry {
+				definition "function frep(x, y, z, t) {		
+					z1 = 0.08;
+					
+					edgeSurface = min(min(min(x+0.25, 0.25-x), y), 0.65-y);
+					edgeEllipsoid = 0.2^2 - (x-0.06)^2 - (y-0.46)^2 - z^2;
+					edge1 = min(edgeSurface, edgeEllipsoid);
+					
+					edgeSurface = min(min(min(x+0.25, 0.25-x), y+0.7), -y);
+					edgeEllipsoid = 0.2^2 - (x-0.06)^2 - (y+0.51)^2 - z^2;
+					edge2 = min(edgeSurface, edgeEllipsoid);
+					
+					indentSurface = min(min(min(min(min(x+0.25, 0.25-x), y+0.3), 0.3-y), z-0.02), (z1 + 0.1)-z);
+					indentCylinder = 0.1^2 - (x)^2 - (y+0.09)^2;
+					indent = min(indentSurface, indentCylinder);
+					
+					surface = min(min(min(min(min(x+0.25, 0.25-x), y+0.7), 0.65-y), z+z1), z1-z);
+					surface1 = min(min(min(min(min(x+0.25, 0.05-x), y+0.7), 0.65-y), z+z1), z1-z);
+					surface2 = min(min(min(min(min(x+0.25, 0.25-x), y+0.5), 0.45-y), z+z1), z1-z);
+					mainSurface1 = max(max(max(surface1, surface2), min(surface, edge1)), min(surface, edge2));
+					mainSurface = min(mainSurface1, -indent);
+					
+					circlePadCone = min(min((((z)/1)^2-((x)/0.5)^2-((y+0.09)/0.5)^2),0.12-z),z);
+					circlePadSurface = min(min(min(min(min(min(x+0.25, 0.25-x), y+0.3), 0.3-y), z-0.12), (z1 + 0.08)-z), 0.12^2 - (x)^2 - (y+0.09)^2 - (z-0.13)^2);
+					circlePad = max(circlePadCone, circlePadSurface);
+					
+					dPadSurface = min(min(min(min(min(x+0.15, 0.15-x), y-0.26), 0.56-y), z), (z1 + 0.03)-z);
+					dPadCylinder = 0.06^2 - (x)^2 - (y-0.41)^2;
+					dPadUp = min(dPadSurface, dPadCylinder);
+					
+					dPadSurface = min(min(min(min(min(x+0.25, 0.05-x), y-0.15), 0.45-y), z), (z1 + 0.03)-z);
+					dPadCylinder = 0.06^2 - (x+0.11)^2 - (y-0.3)^2;
+					dPadLeft = min(dPadSurface, dPadCylinder);
+					
+					dPadSurface = min(min(min(min(min(x+0.05, 0.25-x), y-0.15), 0.45-y), z), (z1 + 0.03)-z);
+					dPadCylinder = 0.06^2 - (x-0.11)^2 - (y-0.3)^2;
+					dPadRight = min(dPadSurface, dPadCylinder);
+					
+					dPadSurface = min(min(min(min(min(x+0.15, 0.15-x), y+0.04), 0.34-y), z), (z1 + 0.03)-z);
+					dPadCylinder = 0.06^2 - (x)^2 - (y-0.19)^2;
+					dPadDown = min(dPadSurface, dPadCylinder);
+					
+					buttonSurface = min(min(min(min(min(x+0.22, 0.12-x), y+0.5), -0.2-y), z), (z1 + 0.025)-z);
+					buttonCylinder = 0.05^2 - (x+0.08)^2 - (y+0.35)^2;
+					circleButton = min(buttonSurface, buttonCylinder);
+					
+					plusButton1 = min(min(min(min(min(x+0.19, -0.11-x), y-0.52), 0.54-y), z), (z1+0.025)-z);
+					plusButton2 = min(min(min(min(min(x+0.16, -0.14-x), y-0.49), 0.57-y), z), (z1+0.025)-z);
+					plusButton = max(plusButton1, plusButton2);
+					
+					backSurface = min(min(min(min(min(x+0.25, 0.25-x), y), 0.62-y), z+(z1*4)), (z1/2)-z);
+					backEllipsoid = 0.2^2 - (x+0.05)^2 - (y-0.62)^2 - z^2;
+					backButton = min(backSurface, backEllipsoid);
+					
+					topSurface = min(min(min(min(min(x+0.2, 0.2-x), y), 0.67-y), z+(z1/2)), (z1/2)-z);
+					topEllipsoid = 0.25^2 - (x+0.05)^2 - (y-0.47)^2 - z^2;
+					topButton = min(topSurface, topEllipsoid);
+					
+					buttonSurface = min(min(min(min(min(x+0.29, -0.01-x), y-0.24), 0.52-y), z+(z1+0.025)), -z);
+					buttonCylinder = 0.04^2 - (x+0.16)^2 - (y-0.38)^2;
+					unlockButton = min(buttonSurface, buttonCylinder);
+					
+					controller = max(max(max(max(max(max(max(max(max(max(mainSurface, circlePad), dPadUp), dPadLeft), dPadRight), dPadDown), circleButton), plusButton), backButton), topButton), unlockButton);
+					return controller;
+				}"
+				
+				
+				bboxSize 0.6 1.45 0.6
+				bboxCenter 0 0 0
+				resolution [100, 100, 100]
+			}
+		}
+	]
+}
+
+Transform {
+	translation 0 0 0
+	
+	children[
+		FShape {
+			appearance FAppearance {
+				material FMaterial {
+					diffuseColor "function frep(x, y, z, t) {
+						if (z < 0.07) {
+							r = 0.2;
+							g = 0.2;
+							b = 0.2;
+						} else {
+							if ((abs(x) >= 1.07 || y >= 0.61 || y <= -0.66)) {
+								r = 0.2;
+								g = 0.2;
+								b = 0.2;
+							} else if ((abs(x) >= 0.92 || (y >= 0.53 || y <= -0.58))) {
+								r = 0.1;
+								g = 0.1;
+								b = 0.1;
+							} else {
+								r = 0.5;
+								g = 0.5;
+								b = 0.5;
+							}
+						}
+						
+						return 0;
+					}"
+				}	
+			}
+			
+			geometry FGeometry {
+				definition "function frep(x, y, z, t) {		
+					z1 = 0.08;
+					surface = min(min(min(min(min(x+1.15, 1.15-x), y+0.7), 0.65-y), z+z1), z1-z);
+					bottomIndent = min(min(min(min(min(x+0.08, 0.08-x), y+0.7), -0.5-y), z+z1), -0.042-z);
+					chargePortIndent = min(min(min(min(min(x+0.08, 0.08-x), y+0.7), -0.55-y), z+0.02), 0.02-z);
+					speakerLeft = min(min(min(min(min(x+0.68, -0.14-x), y+0.55), -0.5-y), z+z1), -0.052-z);
+					speakerRight = min(min(min(min(min(x-0.14, 0.68-x), y+0.55), -0.5-y), z+z1), -0.052-z);
+					kickstand = min(min(min(min(min(x-0.74, 0.98-x), y+0.7), 0.08-y), z+z1+0.01), -0.036-z);
+					kickstand2 = min(min(min(min(min(x-0.75, 0.97-x), y+0.7), 0.07-y), z+z1+0.01), -0.041-z);
+					airVentIndent = min(min(min(min(min(x+0.08, 0.45-x), y-0.52), 0.65-y), z+0.04), 0.03-z);	
+					earJackIndent = min(min(min(min(min(x-0.56, 0.61-x), y-0.4), 0.65-y), z+0.035), 0.015-z);					
+					cardSlot1 = min(min(min(min(min(x-0.70, 1.02-x), y-0.45), 0.65-y), z+z1+0.01), -0.036-z);
+					cardSlot2 = min(min(min(min(min(x-0.71, 1.01-x), y-0.46), 0.65-y), z+z1+0.01), -0.041-z);
+					volumeButtons = min(min(min(min(min(x+0.82, -0.63-x), y-0.52), 0.67-y), z+0.022), 0.04-z);
+					powerButton = min(min(min(min(min(x+0.95, -0.89-x), y-0.52), 0.67-y), z+0.022), 0.04-z);
+					screen = min(min(min(min(min(min(min(min(surface, -bottomIndent), -chargePortIndent), -speakerLeft), -speakerRight), -kickstand), -airVentIndent), -earJackIndent), -cardSlot1);
+					screen = max(max(max(max(screen, kickstand2), cardSlot2), volumeButtons), powerButton);
+					return screen;
+				}"
+				
+				
+				bboxSize 2.4 1.45 0.6
+				bboxCenter 0 0 0
+				resolution [100, 100, 100]
+			}
+		}
+	]
+}
+
+
