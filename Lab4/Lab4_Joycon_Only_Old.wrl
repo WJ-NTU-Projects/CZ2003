@@ -87,63 +87,66 @@ FShape {
 	}
 	
 	geometry FGeometry {
-		definition "function frep(x, y, z, t) {					
-			halfspace1 = x + 0.25;
-			halfspace2 = y + 0.7;
-			halfspace3 = 0.25 - x;
-			halfspace4 = 0.7 - y;
-			halfspace5 = z + 0.08;
-			halfspace6 = 0.08 - z;
-			plane = min(min(min(halfspace1, halfspace2), halfspace3), halfspace4);
-			surface = min(min(plane, halfspace5), halfspace6);	
+		definition "function frep(x, y, z, t) {		
+			z1 = 0.08;
 			
-			edgeEllipsoid = 0.2^2 - (x + 0.06)^2 - (y - 0.51)^2 - z^2;
-			edge1 = min(surface, edgeEllipsoid);
-			edgeEllipsoid = 0.2^2 - (x + 0.06)^2 - (y + 0.51)^2 - z^2;
-			edge2 = min(surface, edgeEllipsoid);
+			edgeSurface = min(min(min(x+0.25, 0.25-x), y), 0.65-y);
+			edgeEllipsoid = 0.2^2 - (x+0.06)^2 - (y-0.46)^2 - z^2;
+			edge1 = min(edgeSurface, edgeEllipsoid);
 			
-			surface1 = min(min(min(min(min(x + 0.05, 0.25 - x), y + 0.7), 0.7 - y), z + 0.08), 0.08 - z); 
-			surface2 = min(min(min(min(min(x + 0.25, 0.25 - x), y + 0.5), 0.5 - y), z + 0.08), 0.08 - z);
-			mainSurface1 = max(max(max(surface1, surface2), edge1), edge2);
+			edgeSurface = min(min(min(x+0.25, 0.25-x), y+0.7), -y);
+			edgeEllipsoid = 0.2^2 - (x+0.06)^2 - (y+0.51)^2 - z^2;
+			edge2 = min(edgeSurface, edgeEllipsoid);
 			
-			indentSurface = min(min(plane, z - 0.02), 0.08 - z);
-			indentCylinder = 0.1^2 - x^2 - (y - 0.37)^2;
+			indentSurface = min(min(min(min(min(x+0.25, 0.25-x), y), 0.52-y), z-0.02), (z1 + 0.1)-z);
+			indentCylinder = 0.1^2 - (x)^2 - (y-0.32)^2;
 			indent = min(indentSurface, indentCylinder);
+			
+			surface = min(min(min(min(min(x+0.25, 0.25-x), y+0.7), 0.65-y), z+z1), z1-z);
+			surface1 = min(min(min(min(min(x+0.05, 0.25-x), y+0.7), 0.65-y), z+z1), z1-z);
+			surface2 = min(min(min(min(min(x+0.25, 0.25-x), y+0.5), 0.45-y), z+z1), z1-z);
+			mainSurface1 = max(max(max(surface1, surface2), min(surface, edge1)), min(surface, edge2));
 			mainSurface = min(mainSurface1, -indent);
 			
-			circlePadSurface = min(min(min(plane, z - 0.12), 0.16 - z), 0.12^2 - x^2 - (y - 0.37)^2 - (z - 0.13)^2);
-			circlePadCone = min(min((z / 1)^2 - (x / 0.5)^2 - ((y - 0.37) / 0.5)^2, 0.12 - z), z);
-			circlePad = max(circlePadCone, circlePadSurface);			
+			circlePadSurface = min(min(min(min(min(min(x+0.25, 0.25-x), y), 0.53-y), z-0.12), (z1 + 0.08)-z), 0.12^2 - (x)^2 - (y-0.32)^2 - (z-0.13)^2);			
+			circlePadCone = min(min((((z)/1)^2-((x)/0.5)^2-((y - 0.32)/0.5)^2),0.12-z),z);
+			circlePad = max(circlePadCone, circlePadSurface);
 			
-			dPadSurface = min(min(plane, z), 0.11 - z);
-			dPadCylinder = 0.06^2 - x^2 - (y - 0.1)^2;
+			dPadSurface = min(min(min(min(min(x+0.15, 0.15-x), y+0.1), 0.2-y), z), (z1 + 0.03)-z);
+			dPadCylinder = 0.06^2 - (x)^2 - (y-0.05)^2;
 			dPadUp = min(dPadSurface, dPadCylinder);
 			
-			dPadCylinder = 0.06^2 - (x + 0.11)^2 - (y + 0.01)^2;
+			dPadSurface = min(min(min(min(min(x+0.25, 0.05-x), y+0.21), 0.09-y), z), (z1 + 0.03)-z);
+			dPadCylinder = 0.06^2 - (x+0.11)^2 - (y+0.06)^2;
 			dPadLeft = min(dPadSurface, dPadCylinder);
 			
-			dPadCylinder = 0.06^2 - (x - 0.11)^2 - (y + 0.01)^2;
+			dPadSurface = min(min(min(min(min(x+0.05, 0.25-x), y+0.21), 0.09-y), z), (z1 + 0.03)-z);
+			dPadCylinder = 0.06^2 - (x-0.11)^2 - (y+0.06)^2;
 			dPadRight = min(dPadSurface, dPadCylinder);
 			
-			dPadCylinder = 0.06^2 - x^2 - (y + 0.12)^2;
+			dPadSurface = min(min(min(min(min(x+0.15, 0.15-x), y+0.32), -0.02-y), z), (z1 + 0.03)-z);
+			dPadCylinder = 0.06^2 - (x)^2 - (y+0.17)^2;
 			dPadDown = min(dPadSurface, dPadCylinder);
 			
-			circleButton = min(min(min(min(min(x - 0.02, 0.12 - x), y + 0.34), -0.24 - y), z), 0.105 - z);
-			minusButton = min(min(min(min(min(x - 0.11, 0.19 - x), y - 0.57), 0.59 - y), z), 0.105 - z);
+			circleButton = min(min(min(min(min(x-0.02, 0.12-x), y+0.4), -0.3-y), z), (z1+0.025)-z);
+			minusButton = min(min(min(min(min(x-0.11, 0.19-x), y-0.52), 0.54-y), z), (z1+0.025)-z);
 			
-			backSurface = min(min(min(min(min(x + 0.25, 0.25 - x), y), 0.67 - y), z + 0.32), 0.04 - z);
-			backEllipsoid = 0.2^2 - (x - 0.05)^2 - (y - 0.67)^2 - z^2;
+			backSurface = min(min(min(min(min(x+0.25, 0.25-x), y), 0.62-y), z+(z1*4)), (z1/2)-z);
+			backEllipsoid = 0.2^2 - (x-0.05)^2 - (y-0.62)^2 - z^2;
 			backButton = min(backSurface, backEllipsoid);
 			
-			topButton = min(min(min(min(min(x + 0.1, 0.2 - x), y), 0.72 - y), z + 0.04), 0.04 - z);
+			topSurface = min(min(min(min(min(x+0.2, 0.2-x), y), 0.67-y), z+(z1/2)), (z1/2)-z);
+			topEllipsoid = 0.25^2 - (x-0.05)^2 - (y-0.47)^2 - z^2;
+			topButton = min(topSurface, topEllipsoid);
 			
-			buttonSurface = min(min(plane, z + 0.105), -z);
-			buttonCylinder = 0.04^2 - (x - 0.18)^2 - (y - 0.46)^2;
+			buttonSurface = min(min(min(min(min(x-0.01, 0.29-x), y-0.24), 0.52-y), z+(z1+0.025)), -z);
+			buttonCylinder = 0.04^2 - (x-0.16)^2 - (y-0.38)^2;
 			unlockButton = min(buttonSurface, buttonCylinder);
 			
 			controller = max(max(max(max(max(max(max(max(max(max(mainSurface, circlePad), dPadUp), dPadLeft), dPadRight), dPadDown), circleButton), minusButton), backButton), topButton), unlockButton);
 			return controller;
 		}"
+		
 		
 		bboxSize 0.6 1.45 0.6
 		bboxCenter 0 0 0
