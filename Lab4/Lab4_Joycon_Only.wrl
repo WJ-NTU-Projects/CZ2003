@@ -104,7 +104,8 @@ FShape {
 			
 			surface1 = min(min(min(min(min(x + 0.05, 0.25 - x), y + 0.7), 0.7 - y), z + 0.08), 0.08 - z); 
 			surface2 = min(min(min(min(min(x + 0.25, 0.25 - x), y + 0.5), 0.5 - y), z + 0.08), 0.08 - z);
-			mainSurface1 = max(max(max(surface1, surface2), edge1), edge2);
+			surface3 = max(surface1, surface2);
+			mainSurface1 = max(max(surface3, edge1), edge2);
 			
 			indentSurface = min(min(plane, z - 0.02), 0.08 - z);
 			indentCylinder = 0.1^2 - x^2 - (y - 0.37)^2;
@@ -113,7 +114,7 @@ FShape {
 			
 			circlePadSurface = min(min(min(plane, z - 0.12), 0.16 - z), 0.12^2 - x^2 - (y - 0.37)^2 - (z - 0.13)^2);
 			circlePadCone = min(min((z / 1)^2 - (x / 0.5)^2 - ((y - 0.37) / 0.5)^2, 0.12 - z), z);
-			circlePad = max(circlePadCone, circlePadSurface);			
+			circlePad = max(circlePadCone, circlePadSurface);	
 			
 			dPadSurface = min(min(plane, z), 0.11 - z);
 			dPadCylinder = 0.06^2 - x^2 - (y - 0.1)^2;
